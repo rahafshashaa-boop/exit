@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>بطاقة الخروج | تصميم خطط التعلم الفردية وتطبيقها</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root{
+    --gold:#AB833A; --gold-dark:#7F612B; --gold-light:#D0AB74;
+    --cream:#F7F1E3; --cream-deep:#EFE4CC;
+    --ink:#33302A; --ink-soft:#6B6459; --white:#FFFFFF;
+    --green:#2E7D32; --red:#B3261E; --line:#E3D6B8;
+    --shadow: 0 18px 40px -22px rgba(90,68,20,0.35); --radius: 18px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Tajawal', 'Cairo', sans-serif;
+    background:
+      radial-gradient(1200px 500px at 15% -10%, rgba(171,131,58,0.10), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(171,131,58,0.08), transparent 55%),
+      var(--cream);
+    color:var(--ink); min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .app{ max-width:640px; margin:0 auto; padding:28px 18px 60px; min-height:100vh; display:flex; flex-direction:column; }
+
+  .brandbar{ display:flex; align-items:center; justify-content:center; margin-bottom:26px; gap:10px; }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand-badge{
+    width:38px;height:38px;border-radius:50%;
+    background:linear-gradient(135deg, var(--gold), var(--gold-dark));
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 14px -6px rgba(127,97,43,0.6); flex-shrink:0;
+  }
+  .brand-text{line-height:1.25;}
+  .brand-text b{display:block; font-size:13.5px; font-weight:800; color:var(--ink);}
+  .brand-text span{display:block; font-size:11px; color:var(--ink-soft);}
+
+  .card{
+    background:var(--white); border-radius:var(--radius); box-shadow:var(--shadow);
+    border:1px solid var(--line); padding:34px 28px;
+  }
+  @media (max-width:480px){ .card{ padding:24px 18px; } }
+
+  .view{ display:none; flex:1; flex-direction:column; }
+  .view.active{ display:flex; }
+
+  #view-intro .card, #view-closing .card{ text-align:center; }
+  .intro-badge{
+    width:86px; height:86px; margin:0 auto 20px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--gold-light), var(--gold) 60%, var(--gold-dark));
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 14px 30px -14px rgba(127,97,43,0.65);
+  }
+  .intro-badge svg{ width:40px; height:40px; }
+  .eyebrow{
+    display:inline-block; font-size:12.5px; font-weight:800; color:var(--gold-dark);
+    background:rgba(171,131,58,0.12); padding:6px 14px; border-radius:999px; margin-bottom:14px;
+  }
+  h1.intro-title{ font-size:26px; font-weight:900; margin:0 0 8px; line-height:1.4; color:var(--ink); }
+  .intro-sub{ font-size:14.5px; color:var(--ink-soft); margin:0 0 26px; line-height:1.9; }
+  .intro-note{
+    text-align:start; background:var(--cream); border:1px solid var(--line);
+    border-radius:14px; padding:16px 18px; margin:0 0 26px; font-size:13.5px; color:var(--ink); line-height:2;
+  }
+  .intro-note b{ color:var(--gold-dark); }
+  .meta-row{ display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-bottom:28px; }
+  .meta-pill{
+    background:var(--cream); border:1px solid var(--line); border-radius:999px;
+    padding:8px 16px; font-size:12.5px; font-weight:700; color:var(--ink-soft);
+    display:flex; align-items:center; gap:6px;
+  }
+  .btn{
+    appearance:none; border:none; cursor:pointer; font-family:inherit;
+    font-weight:800; font-size:15.5px; border-radius:14px; padding:15px 20px;
+    transition:transform .15s ease, box-shadow .15s ease, opacity .15s ease; width:100%;
+  }
+  .btn-primary{
+    background:linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color:#fff; box-shadow:0 14px 26px -14px rgba(127,97,43,0.75);
+  }
+  .btn-primary:hover{ transform:translateY(-1px); }
+  .btn-primary:disabled{ opacity:.4; cursor:not-allowed; transform:none; }
+  .btn-ghost{ background:transparent; color:var(--gold-dark); border:1.5px solid var(--gold-light); }
+  .btn-ghost:hover{ background:rgba(171,131,58,0.08); }
+  .btn-secondary{
+    background:var(--cream); color:var(--ink); border:1.5px solid var(--line); font-size:14px; padding:13px 18px;
+  }
+  .btn-secondary:hover{ background:var(--cream-deep); }
+
+  .progress-wrap{ margin-bottom:22px; }
+  .progress-top{ display:flex; justify-content:space-between; align-items:center; margin-bottom:9px; }
+  .progress-label{ font-size:12.5px; font-weight:800; color:var(--ink-soft); }
+  .progress-count{ font-size:12.5px; font-weight:800; color:var(--gold-dark); }
+  .progress-track{ height:7px; border-radius:999px; background:var(--cream-deep); overflow:hidden; }
+  .progress-fill{
+    height:100%; border-radius:999px; background:linear-gradient(90deg, var(--gold-light), var(--gold));
+    transition:width .35s ease;
+  }
+  .q-num{
+    display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%;
+    background:var(--gold); color:#fff; font-weight:900; font-size:15px; margin-bottom:16px;
+  }
+  .q-text{ font-size:18px; line-height:1.9; font-weight:700; color:var(--ink); margin:0 0 20px; }
+  .q-textarea{
+    width:100%; min-height:150px; border:1.5px solid var(--line); border-radius:14px;
+    padding:14px 16px; font-family:inherit; font-size:14.5px; color:var(--ink); line-height:1.9;
+    resize:vertical; margin-bottom:22px; background:var(--cream);
+  }
+  .q-textarea:focus{ outline:none; border-color:var(--gold); background:#fff; }
+  .q-textarea::placeholder{ color:#B3AA97; }
+  .name-input{
+    width:100%; border:1.5px solid var(--line); border-radius:14px; padding:14px 16px;
+    font-family:inherit; font-size:14.5px; color:var(--ink); margin-bottom:22px; background:var(--cream);
+  }
+  .name-input:focus{ outline:none; border-color:var(--gold); background:#fff; }
+
+  .review-box{
+    background:var(--cream); border:1px solid var(--line); border-radius:14px; padding:16px 18px; margin-bottom:20px;
+  }
+  .review-item{ margin-bottom:14px; }
+  .review-item:last-child{ margin-bottom:0; }
+  .review-q{ font-size:12px; font-weight:800; color:var(--gold-dark); margin-bottom:4px; }
+  .review-a{ font-size:13.5px; color:var(--ink); line-height:1.8; white-space:pre-wrap; }
+
+  .send-options{ display:flex; flex-direction:column; gap:10px; margin-top:16px; }
+
+  .closing-badge{
+    width:86px; height:86px; margin:0 auto 20px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--gold-light), var(--gold) 60%, var(--gold-dark));
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 14px 30px -14px rgba(127,97,43,0.65);
+  }
+  .closing-badge svg{ width:40px; height:40px; }
+  .closing-title{ font-size:23px; font-weight:900; margin:0 0 12px; color:var(--ink); }
+  .closing-msg{ font-size:14.5px; color:var(--ink-soft); line-height:2.1; margin:0 0 26px; }
+
+  footer.page-footer{ text-align:center; font-size:11.5px; color:var(--ink-soft); margin-top:26px; opacity:.75; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="brandbar">
+    <div class="brand">
+      <div class="brand-badge">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="18" height="18">
+          <path d="M4 12h13M13 6l6 6-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <b>تصميم خطط التعلم الفردية وتطبيقها</b>
+        <span>برنامج تدريبي للمعلمين</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== INTRO ===================== -->
+  <section class="view active" id="view-intro">
+    <div class="card">
+      <div class="intro-badge">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 12h13M13 6l6 6-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="eyebrow">في ختام الورشة</span>
+      <h1 class="intro-title">بطاقة الخروج</h1>
+      <p class="intro-sub">3 أسئلة تأملية قصيرة قبل أن تغادري القاعة</p>
+
+      <div class="intro-note">
+        لا توجد إجابات صحيحة أو خاطئة هنا. الهدف أن تأخذي دقيقتين لتحويل ما تعلمتِه اليوم إلى <b>خطوة عملية واضحة</b> تبدئينها غدًا في صفك.
+      </div>
+
+      <div class="meta-row">
+        <span class="meta-pill">✍️ 3 أسئلة مفتوحة</span>
+        <span class="meta-pill">⏱ دقيقتان فقط</span>
+        <span class="meta-pill">📱 مناسبة للجوال</span>
+      </div>
+
+      <button class="btn btn-primary" onclick="goTo('q1')">ابدئي →</button>
+    </div>
+  </section>
+
+  <!-- ===================== Q1 ===================== -->
+  <section class="view" id="view-q1">
+    <div class="card">
+      <div class="progress-wrap">
+        <div class="progress-top">
+          <span class="progress-label">تقدّمك</span>
+          <span class="progress-count">سؤال 1 من 3</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:33%"></div></div>
+      </div>
+      <span class="q-num">1</span>
+      <p class="q-text">ما أول خطوة عملية ستنفذينها من خطتك الفردية غدًا؟</p>
+      <textarea class="q-textarea" id="answer1" placeholder="اكتبي إجابتك هنا..." oninput="toggleNext('answer1','next1')"></textarea>
+      <button class="btn btn-primary" id="next1" onclick="goTo('q2')" disabled>التالي →</button>
+    </div>
+  </section>
+
+  <!-- ===================== Q2 ===================== -->
+  <section class="view" id="view-q2">
+    <div class="card">
+      <div class="progress-wrap">
+        <div class="progress-top">
+          <span class="progress-label">تقدّمك</span>
+          <span class="progress-count">سؤال 2 من 3</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:66%"></div></div>
+      </div>
+      <span class="q-num">2</span>
+      <p class="q-text">ما التحدي المتوقع الذي قد تواجهينه عند تطبيق الخطة؟</p>
+      <textarea class="q-textarea" id="answer2" placeholder="اكتبي إجابتك هنا..." oninput="toggleNext('answer2','next2')"></textarea>
+      <button class="btn btn-primary" id="next2" onclick="goTo('q3')" disabled>التالي →</button>
+    </div>
+  </section>
+
+  <!-- ===================== Q3 ===================== -->
+  <section class="view" id="view-q3">
+    <div class="card">
+      <div class="progress-wrap">
+        <div class="progress-top">
+          <span class="progress-label">تقدّمك</span>
+          <span class="progress-count">سؤال 3 من 3</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:100%"></div></div>
+      </div>
+      <span class="q-num">3</span>
+      <p class="q-text">ما خطتك للتعامل مع هذا التحدي؟</p>
+      <textarea class="q-textarea" id="answer3" placeholder="اكتبي إجابتك هنا..." oninput="toggleNext('answer3','next3')"></textarea>
+      <button class="btn btn-primary" id="next3" onclick="goTo('review')" disabled>مراجعة الإجابات →</button>
+    </div>
+  </section>
+
+  <!-- ===================== REVIEW + SEND ===================== -->
+  <section class="view" id="view-review">
+    <div class="card">
+      <span class="eyebrow">قبل الإرسال</span>
+      <p class="q-text" style="margin-bottom:18px;">راجعي إجاباتك، وأضيفي اسمك إن أحببتِ (اختياري)</p>
+
+      <div class="review-box" id="reviewBox"></div>
+
+      <input type="text" class="name-input" id="traineeName" placeholder="اسمك (اختياري)">
+
+      <button class="btn btn-primary" onclick="submitTicket()">📩 إرسال</button>
+
+      <div class="send-options">
+        <button class="btn btn-secondary" onclick="sendWhatsapp()">💬 إرسال عبر واتساب</button>
+        <button class="btn btn-secondary" onclick="downloadAnswers()">⬇ تنزيل إجاباتي كملف نصي</button>
+        <button class="btn btn-secondary" onclick="copyAnswers()">📋 نسخ الإجابات</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CLOSING ===================== -->
+  <section class="view" id="view-closing">
+    <div class="card">
+      <div class="closing-badge">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2 class="closing-title">شكرًا لتأملك ✨</h2>
+      <p class="closing-msg">
+        الفرق الحقيقي لا يبدأ من امتلاك المعرفة، بل من أول خطوة تطبّقينها غدًا.<br>
+        احتفظي بإجابتك عن الخطوة الأولى في مكان تراجعينه بسهولة — واعتبري هذه البطاقة وعدًا بسيطًا لنفسك قبل أن يكون تقريرًا لأحد.<br>
+        بالتوفيق في أول تطبيق لخطتك الفردية 🌱
+      </p>
+      <button class="btn btn-ghost" onclick="location.reload()">تعبئة بطاقة جديدة</button>
+    </div>
+  </section>
+
+  <footer class="page-footer">تصميم خطط التعلم الفردية وتطبيقها — بطاقة الخروج · يوليو 2026</footer>
+</div>
+
+<script>
+/* =====================================================
+   ⚙️ إعدادات المدرب — عدّلي هذين السطرين قبل نشر الملف
+   ===================================================== */
+const TRAINER_EMAIL = "trainer@example.com";      // ضعي بريدك الإلكتروني هنا لاستقبال البطاقات
+const TRAINER_WHATSAPP = "971500000000";           // رقم واتساب بصيغة دولية بدون + أو صفر بادئ
+
+const views = ['intro','q1','q2','q3','review','closing'];
+
+function goTo(name){
+  views.forEach(v => document.getElementById('view-'+v).classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+  if(name === 'review') renderReview();
+}
+
+function toggleNext(taId, btnId){
+  const val = document.getElementById(taId).value.trim();
+  document.getElementById(btnId).disabled = val.length < 2;
+}
+
+function renderReview(){
+  const questions = [
+    "ما أول خطوة عملية ستنفذينها من خطتك الفردية غدًا؟",
+    "ما التحدي المتوقع الذي قد تواجهينه عند تطبيق الخطة؟",
+    "ما خطتك للتعامل مع هذا التحدي؟"
+  ];
+  const box = document.getElementById('reviewBox');
+  box.innerHTML = '';
+  questions.forEach((q, i) => {
+    const ans = document.getElementById('answer'+(i+1)).value.trim();
+    const item = document.createElement('div');
+    item.className = 'review-item';
+    item.innerHTML = `<div class="review-q">${i+1}. ${q}</div><div class="review-a">${ans}</div>`;
+    box.appendChild(item);
+  });
+}
+
+function buildAnswersText(){
+  const name = document.getElementById('traineeName').value.trim() || 'بدون اسم';
+  const a1 = document.getElementById('answer1').value.trim();
+  const a2 = document.getElementById('answer2').value.trim();
+  const a3 = document.getElementById('answer3').value.trim();
+  return `بطاقة الخروج — تصميم خطط التعلم الفردية وتطبيقها
+اسم المتدرب: ${name}
+التاريخ: ${new Date().toLocaleDateString('ar-EG')}
+
+1) ما أول خطوة عملية ستنفذينها من خطتك الفردية غدًا؟
+${a1}
+
+2) ما التحدي المتوقع الذي قد تواجهينه عند تطبيق الخطة؟
+${a2}
+
+3) ما خطتك للتعامل مع هذا التحدي؟
+${a3}`;
+}
+
+function submitTicket(){
+  const text = buildAnswersText();
+  const name = document.getElementById('traineeName').value.trim() || 'متدرب بدون اسم';
+  const subject = encodeURIComponent('بطاقة خروج - ' + name);
+  const body = encodeURIComponent(text);
+  try{
+    window.location.href = `mailto:${TRAINER_EMAIL}?subject=${subject}&body=${body}`;
+  }catch(e){ /* ignore */ }
+  setTimeout(() => goTo('closing'), 400);
+}
+
+function sendWhatsapp(){
+  const text = buildAnswersText();
+  const url = `https://wa.me/${TRAINER_WHATSAPP}?text=${encodeURIComponent(text)}`;
+  window.open(url, '_blank');
+  goTo('closing');
+}
+
+function downloadAnswers(){
+  const text = buildAnswersText();
+  const name = document.getElementById('traineeName').value.trim() || 'exit-ticket';
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `بطاقة-خروج-${name}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function copyAnswers(){
+  const text = buildAnswersText();
+  navigator.clipboard.writeText(text).then(() => {
+    alert('تم نسخ إجاباتك — يمكنك لصقها في رسالة أو نموذج آخر.');
+  }).catch(() => {
+    alert('تعذّر النسخ التلقائي، يمكنك تحديد النص ونسخه يدويًا.');
+  });
+}
+</script>
+</body>
+</html>
